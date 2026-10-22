@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Kerja Sama Dunia - Kelas 9</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 15px;
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      color: #222;
+      -webkit-user-select: none;
+      /* Safari */
+      -ms-user-select: none;
+      /* IE 10 dan lama */
+      user-select: none;
+      /* Standar modern */
+    }
+
+    .created-by {
+      position: absolute;
+      bottom: 20px;
+      right: 25px;
+      font-size: 14px;
+      color: #d7e0e4;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 750px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .container::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 4px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #3a2e7a;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 15px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #eef0ff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #2c2c54;
+      border: 2px solid #d0d5ff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .progress {
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width .4s;
+    }
+
+    .question {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      color: #2c2c54;
+      background: #b9f5b0;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .option {
+      padding: 14px 16px;
+      background: #5a15ef;
+      border: 2px solid #e0dcf5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .2s;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .option:hover:not(:disabled) {
+      background: #d62a55;
+      transform: translateX(5px);
+    }
+
+    .option:disabled {
+      cursor: not-allowed;
+      opacity: 0.9;
+    }
+
+    .option.correct {
+      background: #b9f5b0;
+      border-color: #2e7d32;
+      color: #1b5e20;
+      font-weight: 500;
+    }
+
+    .option.wrong {
+      background: #ffb3b3;
+      border-color: #c62828;
+      color: #7f0000;
+      font-weight: 500;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      transition: .2s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, .25);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-small {
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      font-size: 14px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-align: center;
+      display: none;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.benar {
+      background: #b9f5b0;
+      color: #1b5e20;
+      border: 2px solid #2e7d32;
+    }
+
+    .feedback.salah {
+      background: #ffb3b3;
+      color: #7f0000;
+      border: 2px solid #c62828;
+    }
+
+    .start-screen,
+    .end-screen {
+      text-align: center;
+      padding: 15px 10px;
+    }
+
+    .end-screen h2 {
+      color: #3a2e7a;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+
+    .score-big {
+      font-size: 60px;
+      font-weight: 900;
+      color: #764ba2;
+      margin: 10px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, .1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .music-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #fff;
+      border: 2px solid #764ba2;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+      z-index: 100;
+    }
+
+    p {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      color: #856404;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .info-box strong {
+      color: #856404;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 18px;
+        max-height: calc(100vh - 20px);
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .question {
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      .option {
+        font-size: 15px;
+        padding: 12px 14px;
+      }
+
+      .info-bar {
+        font-size: 14px;
+        padding: 10px 14px;
+      }
+
+      .score-big {
+        font-size: 50px;
+      }
+
+      .music-toggle {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="music-toggle" id="musicBtn" title="Musik">🔇</button>
+
+  <div class="created-by">Created by Heru Yusro</div>
+
+  <div class="container" id="mainContainer">
+    <div id="startScreen" class="start-screen">
+      <h1>🌱 Kuis IPS Kelas 9</h1>
+      <p class="subtitle">Kuis Kerja Sama Dunia</p>
+      <div class="info-box">
+        <strong>📱 Info Penting untuk HP Android:</strong><br>
+        • Pastikan <strong>volume media HP tidak silent/mute</strong><br>
+        • Tekan <strong>"Test Suara"</strong> untuk mengaktifkan audio<br>
+        • Izinkan suara jika browser meminta
+      </div>
+      <p style="margin:15px 0;">Jawab 50 pertanyaan. Skor skala <strong>10 - 100</strong>.</p>
+      <button id="testBtn" onclick="testSuara()"
+        style="margin-bottom:10px; background: linear-gradient(135deg, #11998e, #38ef7d);">🔊 Test Suara Dulu</button>
+      <button onclick="mulaiKuis()">🎯 Mulai Kuis</button>
+    </div>
+
+    <div id="quizScreen" class="hidden">
+      <h1>🌱 Kerja Sama Dunia</h1>
+      <div class="info-bar">
+        <span>Soal: <span id="qNum">1</span>/50</span>
+        <span>Skor: <span id="score">2</span></span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="question" id="questionText"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn-small" onclick="bacaSoal()">🔊 Baca Lagi</button>
+        <button id="nextBtn" onclick="nextSoal()" disabled>Lanjut ➡</button>
+      </div>
+    </div>
+
+    <div id="endScreen" class="end-screen hidden">
+      <h2>🎉 Kuis Selesai!</h2>
+      <p>Skor akhir kamu:</p>
+      <div class="score-big" id="finalScore">2</div>
+      <p id="pesanAkhir" style="margin-bottom:15px;"></p>
+      <button onclick="location.reload()">🔄 Ulangi Kuis</button>
+    </div>
+  </div>
+
+  <script>
+
+    // ====== LAPORAN AKTIVITAS KE GOOGLE SPREADSHEET ======
+    // Ganti URL di bawah dengan URL Web App Google Apps Script yang berakhiran /exec.
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbx16OflbXEh-gNZKUOfq4y2sE_-vDGbrt75-xJF6PMRXWRuEy05ojiGSLRtRZ0HD-JpMA/exec";
+
+    let sesiKuis = "";
+    try {
+      sesiKuis = sessionStorage.getItem("kuis_sesi_ipa") || "";
+      if (!sesiKuis) {
+        sesiKuis = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : "sesi-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+        sessionStorage.setItem("kuis_sesi_ipa", sesiKuis);
+      }
+    } catch (e) {
+      sesiKuis = "sesi-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+    }
+
+    function catatAktivitas(aktivitas, nilaiTambahan = {}) {
+      // PERBAIKAN: Mengecek apakah URL masih default/kosong menggunakan .includes()
+      if (!URL_APPS_SCRIPT || URL_APPS_SCRIPT.includes("https://script.google.com/macros/s/AKfycbx16OflbXEh-gNZKUOfq4y2sE_-vDGbrt75-xJF6PMRXWRuEy05ojiGSLRtRZ0HD-JpMA/execc")) {
+        console.warn("Laporan belum aktif. Isi URL_APPS_SCRIPT dengan URL Web App Apps Script yang valid.");
+        return;
+      }
+
+      const data = {
+        aktivitas: aktivitas,
+        halaman: "Kuis IPA - Pewarisan Sifat dan Bioteknologi",
+        url: location.href,
+        referrer: document.referrer || "",
+        sesi: sesiKuis,
+        perangkat: navigator.userAgent || "",
+        skor: nilaiTambahan.skor ?? "",
+        jumlahSoal: nilaiTambahan.jumlahSoal ?? 50,
+        jawabanBenar: nilaiTambahan.jawabanBenar ?? ""
+      };
+
+      // mode no-cors membuat respons tidak bisa dibaca browser, tetapi permintaan dikirim.
+      fetch(URL_APPS_SCRIPT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data),
+        keepalive: true
+      }).catch(err => console.warn("Gagal mengirim laporan aktivitas:", err));
+    }
+
+    // Catat kunjungan ketika halaman dibuka.
+    catatAktivitas("Halaman dibuka");
+
+
+
+    // ====== 50 PERTANYAAN ======
+    const soalAsli = [
+      {
+        q: "Apa yang dimaksud dengan kerja sama dunia?",
+        o: [
+          "Hubungan kerja sama antarnegara untuk mencapai tujuan bersama",
+          "Persaingan antarnegara untuk menguasai wilayah lain",
+          "Kegiatan suatu negara tanpa bantuan negara lain",
+          "Upaya negara menutup hubungan dengan negara lain"
+        ],
+        a: 0
+      },
+      {
+        q: "Apa tujuan utama negara-negara melakukan kerja sama internasional?",
+        o: [
+          "Menguasai seluruh sumber daya dunia",
+          "Memenuhi kepentingan bersama dan meningkatkan kesejahteraan",
+          "Menghilangkan seluruh kebudayaan lokal",
+          "Membatasi hubungan perdagangan antarnegara"
+        ],
+        a: 1
+      },
+      {
+        q: "Kerja sama yang dilakukan oleh dua negara disebut kerja sama ...",
+        o: [
+          "Regional",
+          "Multilateral",
+          "Bilateral",
+          "Global"
+        ],
+        a: 2
+      },
+      {
+        q: "Kerja sama yang melibatkan banyak negara disebut kerja sama ...",
+        o: [
+          "Bilateral",
+          "Multilateral",
+          "Individual",
+          "Lokal"
+        ],
+        a: 1
+      },
+      {
+        q: "Kerja sama regional adalah kerja sama yang dilakukan oleh negara-negara ...",
+        o: [
+          "Dalam kawasan geografis tertentu",
+          "Yang memiliki satu bahasa saja",
+          "Yang memiliki jumlah penduduk sama",
+          "Di seluruh dunia tanpa batas kawasan"
+        ],
+        a: 0
+      },
+      {
+        q: "Contoh organisasi kerja sama regional di kawasan Asia Tenggara adalah ...",
+        o: [
+          "NATO",
+          "ASEAN",
+          "OPEC",
+          "Uni Afrika"
+        ],
+        a: 1
+      },
+      {
+        q: "ASEAN merupakan singkatan dari ...",
+        o: [
+          "Association of Southeast Asian Nations",
+          "Asian Society of European Nations",
+          "Association of South European Areas",
+          "Alliance of Southeast Asian Networks"
+        ],
+        a: 0
+      },
+      {
+        q: "ASEAN didirikan pada tanggal ...",
+        o: [
+          "17 Agustus 1945",
+          "24 Oktober 1945",
+          "8 Agustus 1967",
+          "1 Januari 1995"
+        ],
+        a: 2
+      },
+      {
+        q: "Deklarasi Bangkok merupakan dokumen yang menjadi dasar berdirinya ...",
+        o: [
+          "PBB",
+          "ASEAN",
+          "WTO",
+          "APEC"
+        ],
+        a: 1
+      },
+      {
+        q: "Salah satu negara pendiri ASEAN adalah ...",
+        o: [
+          "Vietnam",
+          "Brunei Darussalam",
+          "Indonesia",
+          "Kamboja"
+        ],
+        a: 2
+      },
+      {
+        q: "Negara yang menjadi tempat penandatanganan Deklarasi Bangkok adalah ...",
+        o: [
+          "Thailand",
+          "Indonesia",
+          "Malaysia",
+          "Filipina"
+        ],
+        a: 0
+      },
+      {
+        q: "Berikut ini yang bukan merupakan negara anggota ASEAN adalah ...",
+        o: [
+          "Laos",
+          "Myanmar",
+          "Jepang",
+          "Singapura"
+        ],
+        a: 2
+      },
+      {
+        q: "Salah satu tujuan ASEAN adalah ...",
+        o: [
+          "Meningkatkan kerja sama ekonomi dan sosial budaya",
+          "Membentuk pemerintahan tunggal seluruh dunia",
+          "Menghapus kedaulatan negara anggota",
+          "Membatasi pendidikan antarnegara"
+        ],
+        a: 0
+      },
+      {
+        q: "Kerja sama ASEAN dalam bidang pendidikan dapat dilakukan melalui ...",
+        o: [
+          "Larangan pertukaran pelajar",
+          "Pertukaran pelajar dan beasiswa",
+          "Penutupan perguruan tinggi",
+          "Pembatasan penelitian ilmiah"
+        ],
+        a: 1
+      },
+      {
+        q: "Contoh kerja sama ASEAN dalam bidang ekonomi adalah ...",
+        o: [
+          "Pertukaran tarian tradisional saja",
+          "Penyelenggaraan pertandingan olahraga lokal",
+          "Pengurangan hambatan perdagangan antarnegara anggota",
+          "Pembatasan seluruh kegiatan ekspor"
+        ],
+        a: 2
+      },
+      {
+        q: "APEC merupakan forum kerja sama yang berfokus pada kawasan ...",
+        o: [
+          "Asia-Pasifik",
+          "Afrika Utara",
+          "Eropa Timur",
+          "Amerika Selatan"
+        ],
+        a: 0
+      },
+      {
+        q: "Kepanjangan APEC adalah ...",
+        o: [
+          "Asian Political and Economic Council",
+          "Asia-Pacific Economic Cooperation",
+          "Association of Pacific European Countries",
+          "Asian Partnership for Environmental Cooperation"
+        ],
+        a: 1
+      },
+      {
+        q: "Organisasi OPEC berkaitan erat dengan kerja sama dalam bidang ...",
+        o: [
+          "Pendidikan",
+          "Kesehatan",
+          "Perminyakan",
+          "Pariwisata"
+        ],
+        a: 2
+      },
+      {
+        q: "PBB didirikan dengan salah satu tujuan utama untuk ...",
+        o: [
+          "Menjaga perdamaian dan keamanan internasional",
+          "Menguasai perdagangan seluruh negara",
+          "Menghapus semua pemerintahan nasional",
+          "Membentuk satu mata uang dunia"
+        ],
+        a: 0
+      },
+      {
+        q: "PBB merupakan singkatan dari ...",
+        o: [
+          "Persatuan Bangsa-Bangsa",
+          "Perhimpunan Bisnis Bersama",
+          "Persatuan Budaya Bersatu",
+          "Persekutuan Benua-Benua"
+        ],
+        a: 0
+      },
+      {
+        q: "PBB secara resmi berdiri pada tanggal ...",
+        o: [
+          "8 Agustus 1967",
+          "24 Oktober 1945",
+          "1 Januari 1995",
+          "10 November 1945"
+        ],
+        a: 1
+      },
+      {
+        q: "Badan PBB yang bertugas menangani masalah kesehatan dunia adalah ...",
+        o: [
+          "UNESCO",
+          "UNICEF",
+          "WHO",
+          "ILO"
+        ],
+        a: 2
+      },
+      {
+        q: "UNESCO berperan dalam kerja sama internasional di bidang ...",
+        o: [
+          "Pendidikan, ilmu pengetahuan, dan kebudayaan",
+          "Perdagangan minyak bumi",
+          "Pertahanan militer",
+          "Pengaturan harga bahan pangan"
+        ],
+        a: 0
+      },
+      {
+        q: "UNICEF terutama berfokus pada upaya perlindungan dan kesejahteraan ...",
+        o: [
+          "Perusahaan multinasional",
+          "Anak-anak",
+          "Tentara internasional",
+          "Wisatawan asing"
+        ],
+        a: 1
+      },
+      {
+        q: "ILO merupakan organisasi internasional yang menangani persoalan ...",
+        o: [
+          "Ketenagakerjaan",
+          "Penerbangan luar angkasa",
+          "Olahraga internasional",
+          "Pelestarian benda bersejarah"
+        ],
+        a: 0
+      },
+      {
+        q: "WTO merupakan organisasi yang berkaitan dengan ...",
+        o: [
+          "Perdagangan dunia",
+          "Kesehatan anak",
+          "Pendidikan dasar",
+          "Perlindungan satwa lokal"
+        ],
+        a: 0
+      },
+      {
+        q: "Salah satu manfaat kerja sama perdagangan internasional adalah ...",
+        o: [
+          "Mengurangi pilihan barang bagi masyarakat",
+          "Memperluas pasar bagi produk dalam negeri",
+          "Menghentikan pertukaran teknologi",
+          "Menutup kesempatan ekspor"
+        ],
+        a: 1
+      },
+      {
+        q: "Kegiatan menjual barang dari dalam negeri ke luar negeri disebut ...",
+        o: [
+          "Impor",
+          "Konsumsi",
+          "Ekspor",
+          "Distribusi lokal"
+        ],
+        a: 2
+      },
+      {
+        q: "Kegiatan membeli barang dari luar negeri disebut ...",
+        o: [
+          "Ekspor",
+          "Impor",
+          "Produksi",
+          "Investasi domestik"
+        ],
+        a: 1
+      },
+      {
+        q: "Indonesia mengimpor barang yang belum dapat dipenuhi dari produksi dalam negeri untuk ...",
+        o: [
+          "Memenuhi kebutuhan masyarakat dan industri",
+          "Menghentikan seluruh kegiatan ekonomi",
+          "Mengurangi pilihan bahan baku",
+          "Menutup hubungan dengan negara lain"
+        ],
+        a: 0
+      },
+      {
+        q: "Salah satu contoh kerja sama internasional dalam bidang teknologi adalah ...",
+        o: [
+          "Melarang penggunaan ilmu pengetahuan",
+          "Pertukaran pengetahuan dan pengembangan teknologi",
+          "Menghentikan penelitian antarnegara",
+          "Membatasi akses pendidikan digital"
+        ],
+        a: 1
+      },
+      {
+        q: "Kerja sama internasional dalam bidang kesehatan dapat berupa ...",
+        o: [
+          "Pertukaran informasi tentang penyakit menular",
+          "Penutupan seluruh pusat penelitian",
+          "Larangan bantuan medis lintas negara",
+          "Pembatasan penyebaran informasi kesehatan"
+        ],
+        a: 0
+      },
+      {
+        q: "Kerja sama antarnegara dalam penanggulangan bencana bertujuan untuk ...",
+        o: [
+          "Memperbesar dampak bencana",
+          "Membatasi bantuan kemanusiaan",
+          "Mempercepat bantuan dan pemulihan wilayah terdampak",
+          "Menghentikan komunikasi antarnegara"
+        ],
+        a: 2
+      },
+      {
+        q: "Bentuk kerja sama internasional dalam bidang lingkungan adalah ...",
+        o: [
+          "Meningkatkan pencemaran laut",
+          "Mengabaikan perubahan iklim",
+          "Mengurangi kegiatan konservasi",
+          "Mengendalikan emisi dan melindungi keanekaragaman hayati"
+        ],
+        a: 3
+      },
+      {
+        q: "Perubahan iklim membutuhkan kerja sama dunia karena ...",
+        o: [
+          "Dampaknya hanya terjadi di satu desa",
+          "Dampaknya dapat melintasi batas negara",
+          "Tidak berhubungan dengan kehidupan manusia",
+          "Hanya dapat diselesaikan oleh perusahaan"
+        ],
+        a: 1
+      },
+      {
+        q: "Globalisasi mendorong kerja sama antarnegara karena ...",
+        o: [
+          "Hubungan ekonomi, komunikasi, dan informasi semakin terhubung",
+          "Setiap negara tidak lagi membutuhkan negara lain",
+          "Transportasi internasional semakin tidak diperlukan",
+          "Semua negara harus memiliki budaya yang sama"
+        ],
+        a: 0
+      },
+      {
+        q: "Salah satu dampak positif kerja sama internasional bagi Indonesia adalah ...",
+        o: [
+          "Berkurangnya kesempatan belajar",
+          "Terhambatnya pertukaran pengetahuan",
+          "Bertambahnya peluang investasi dan lapangan kerja",
+          "Hilangnya seluruh kegiatan ekspor"
+        ],
+        a: 2
+      },
+      {
+        q: "Salah satu tantangan dalam kerja sama antarnegara adalah ...",
+        o: [
+          "Semua negara selalu memiliki kepentingan yang sama",
+          "Tidak adanya perbedaan kebudayaan",
+          "Tidak adanya persaingan ekonomi",
+          "Perbedaan kepentingan dan kebijakan nasional"
+        ],
+        a: 3
+      },
+      {
+        q: "Sikap yang tepat ketika bekerja sama dengan negara lain yang berbeda budaya adalah ...",
+        o: [
+          "Memaksakan budaya sendiri",
+          "Menghormati perbedaan dan menjalin komunikasi",
+          "Menolak seluruh kebiasaan negara lain",
+          "Menghindari semua bentuk dialog"
+        ],
+        a: 1
+      },
+      {
+        q: "Prinsip penting dalam kerja sama internasional adalah ...",
+        o: [
+          "Saling menghormati kedaulatan negara",
+          "Mencampuri semua urusan dalam negeri negara lain",
+          "Mengutamakan konflik bersenjata",
+          "Memaksakan keputusan sepihak"
+        ],
+        a: 0
+      },
+      {
+        q: "Diplomasi dalam hubungan internasional adalah upaya untuk ...",
+        o: [
+          "Menyelesaikan masalah melalui komunikasi dan perundingan",
+          "Menghindari seluruh hubungan antarnegara",
+          "Menggantikan perdagangan dengan konflik",
+          "Menghapus perjanjian internasional"
+        ],
+        a: 0
+      },
+      {
+        q: "Perjanjian internasional dibuat untuk ...",
+        o: [
+          "Menimbulkan perselisihan baru",
+          "Mengatur kesepakatan dan kewajiban para pihak",
+          "Menghapus semua aturan nasional",
+          "Membatasi komunikasi antarnegara"
+        ],
+        a: 1
+      },
+      {
+        q: "Bantuan kemanusiaan internasional biasanya diberikan kepada masyarakat yang ...",
+        o: [
+          "Sedang mengalami konflik atau bencana",
+          "Tidak membutuhkan pertolongan",
+          "Ingin menghentikan pendidikan",
+          "Menolak seluruh pelayanan kesehatan"
+        ],
+        a: 0
+      },
+      {
+        q: "Kerja sama dalam bidang pariwisata dapat memberikan manfaat berupa ...",
+        o: [
+          "Berkurangnya kunjungan wisatawan",
+          "Tertutupnya usaha lokal",
+          "Meningkatnya pendapatan masyarakat dan devisa",
+          "Terhentinya pertukaran budaya"
+        ],
+        a: 2
+      },
+      {
+        q: "Devisa yang diperoleh dari kegiatan pariwisata dapat berasal dari ...",
+        o: [
+          "Pengeluaran wisatawan asing selama berkunjung",
+          "Pembelian barang oleh penduduk di pasar lokal saja",
+          "Pembayaran pajak oleh seluruh warga tanpa kegiatan wisata",
+          "Penutupan tempat wisata bagi pengunjung asing"
+        ],
+        a: 0
+      },
+      {
+        q: "Kerja sama internasional di bidang olahraga dapat mempererat hubungan antarnegara melalui ...",
+        o: [
+          "Larangan mengikuti pertandingan",
+          "Pertandingan dan pertukaran atlet",
+          "Pembatasan komunikasi antarpemain",
+          "Penghentian semua kompetisi"
+        ],
+        a: 1
+      },
+      {
+        q: "Salah satu bentuk peran Indonesia dalam menjaga perdamaian dunia adalah ...",
+        o: [
+          "Menolak seluruh perundingan damai",
+          "Mendorong konflik antarnegara",
+          "Mengirim pasukan penjaga perdamaian sesuai mandat internasional",
+          "Memutus semua hubungan diplomatik"
+        ],
+        a: 2
+      },
+      {
+        q: "Politik luar negeri Indonesia dikenal dengan prinsip ...",
+        o: [
+          "Bebas aktif",
+          "Tertutup permanen",
+          "Memihak satu kekuatan dunia",
+          "Mengisolasi diri"
+        ],
+        a: 0
+      },
+      {
+        q: "Makna politik luar negeri bebas aktif bagi Indonesia adalah ...",
+        o: [
+          "Tidak boleh menjalin hubungan dengan negara lain",
+          "Bebas menentukan sikap dan aktif berkontribusi dalam perdamaian",
+          "Selalu mengikuti keputusan negara besar",
+          "Hanya bekerja sama dengan negara tetangga"
+        ],
+        a: 1
+      },
+      {
+        q: "Mengapa kerja sama dunia penting untuk menghadapi kejahatan lintas negara?",
+        o: [
+          "Karena kejahatan lintas negara dapat ditangani satu negara tanpa informasi lain",
+          "Karena kerja sama menghilangkan kebutuhan hukum",
+          "Karena pelaku selalu berada di satu wilayah saja",
+          "Karena pertukaran informasi dan koordinasi dapat membantu penegakan hukum"
+        ],
+        a: 3
+      },
+      {
+        q: "Sikap yang tepat bagi pelajar dalam menghadapi kerja sama dunia adalah ...",
+        o: [
+          "Menolak mempelajari budaya bangsa lain",
+          "Mengabaikan perkembangan ilmu pengetahuan",
+          "Meningkatkan pengetahuan, toleransi, dan kemampuan berkomunikasi",
+          "Menganggap kerja sama tidak berguna"
+        ],
+        a: 2
+      }
+    ];
+
+
+    // ====== FUNGSI ACAK (Fisher-Yates Shuffle) ======
+    function shuffleArray(arr) {
+      const shuffled = [...arr];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // ====== AUDIO SYSTEM ======
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        catch (e) { console.warn('AudioContext error:', e); }
+      }
+      return audioCtx;
+    }
+
+    function unlockAudio() {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.frequency.value = 440;
+        g.gain.setValueAtTime(0.001, ctx.currentTime);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + 0.05);
+      } catch (e) { }
+    }
+
+    function playTone(freq, dur, type = 'sine', vol = 0.3) {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + dur);
+      } catch (e) { }
+    }
+
+    function suaraKlik() { playTone(800, 0.1, 'square', 0.2); }
+    function suaraBenar() {
+      playTone(523, 0.15, 'sine', 0.3);
+      setTimeout(() => playTone(659, 0.15, 'sine', 0.3), 150);
+      setTimeout(() => playTone(784, 0.3, 'sine', 0.3), 300);
+    }
+    function suaraSalah() {
+      playTone(300, 0.2, 'sawtooth', 0.25);
+      setTimeout(() => playTone(200, 0.4, 'sawtooth', 0.25), 200);
+    }
+
+    // ====== MUSIK LATAR ======
+    let musikOn = false, musikInterval;
+    const nadaMusik = [261, 329, 392, 329, 261, 392, 329, 261, 349, 293, 261, 329];
+    let idxNada = 0;
+
+    function toggleMusik() {
+      unlockAudio();
+      musikOn = !musikOn;
+      document.getElementById('musicBtn').textContent = musikOn ? '🔊' : '🔇';
+      if (musikOn) {
+        musikInterval = setInterval(() => {
+          playTone(nadaMusik[idxNada % nadaMusik.length], 0.4, 'triangle', 0.08);
+          idxNada++;
+        }, 500);
+      } else {
+        clearInterval(musikInterval);
+      }
+    }
+    document.getElementById('musicBtn').onclick = toggleMusik;
+
+    // ====== TEXT TO SPEECH ======
+    let voiceID = null;
+
+    function pilihVoiceIndonesia() {
+      const voices = speechSynthesis.getVoices();
+      if (voices.length === 0) return null;
+      let voice = voices.find(v => v.lang === 'id-ID') ||
+        voices.find(v => v.lang.startsWith('id')) ||
+        voices.find(v => v.lang === 'ms-MY') ||
+        voices.find(v => v.lang.startsWith('ms'));
+      if (voice) voiceID = voice;
+      return voice;
+    }
+
+    if ('speechSynthesis' in window) {
+      pilihVoiceIndonesia();
+      speechSynthesis.onvoiceschanged = pilihVoiceIndonesia;
+    }
+
+    function bicara(teks) {
+      if (!('speechSynthesis' in window)) return;
+      speechSynthesis.cancel();
+      try {
+        const u = new SpeechSynthesisUtterance(teks);
+        if (voiceID) u.voice = voiceID;
+        u.lang = 'id-ID';
+        u.rate = 0.95;
+        u.pitch = 1;
+        u.volume = 1;
+        speechSynthesis.speak(u);
+      } catch (e) { console.warn('Bicara error:', e); }
+    }
+
+    function hentikanSuara() {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    function testSuara() {
+      unlockAudio();
+      setTimeout(() => {
+        playTone(440, 0.3, 'sine', 0.3);
+        setTimeout(() => playTone(660, 0.3, 'sine', 0.3), 350);
+      }, 100);
+      setTimeout(() => bicara("Test suara berhasil. Selamat belajar!"), 200);
+      alert("🔊 Jika kamu mendengar suara beep dan bicara, berarti audio berfungsi!");
+    }
+
+    // ====== GAME LOGIC ======
+    let idx = 0, skor = 0, sudahDijawab = false;
+    let timeoutBacaSoal = null; // 🔑 Variabel untuk menyimpan ID timeout
+
+    function mulaiKuis() {
+      unlockAudio();
+
+      // Acak urutan soal setiap mulai kuis
+      soal = shuffleArray(soalAsli);
+
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(" ");
+        speechSynthesis.speak(u);
+      }
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      catatAktivitas("Mulai kuis");
+      tampilkanSoal();
+      if (!musikOn) toggleMusik();
+    }
+
+    function tampilkanSoal() {
+      sudahDijawab = false;
+
+      // 🔑 Batalkan timeout pembacaan soal sebelumnya (jika ada)
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+      hentikanSuara(); // Stop semua suara yang sedang berjalan
+
+      const s = soal[idx];
+      document.getElementById('qNum').textContent = idx + 1;
+      document.getElementById('score').textContent = skor;
+      document.getElementById('progressFill').style.width = ((idx) / 50 * 100) + '%';
+      document.getElementById('questionText').textContent = (idx + 1) + ". " + s.q;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').disabled = true;
+
+      const optDiv = document.getElementById('options');
+      optDiv.innerHTML = '';
+      const huruf = ['A', 'B', 'C', 'D'];
+      s.o.forEach((opsi, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = huruf[i] + ". " + opsi;
+        btn.addEventListener('click', () => pilihJawaban(i, btn));
+        optDiv.appendChild(btn);
+      });
+
+      document.getElementById('mainContainer').scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 🔑 Simpan ID timeout agar bisa dibatalkan nanti
+      timeoutBacaSoal = setTimeout(() => {
+        if (!sudahDijawab) { // 🔑 Hanya baca jika belum dijawab
+          bicara(s.q + ". Pilihan: " + s.o.join(", "));
+        }
+        timeoutBacaSoal = null;
+      }, 500);
+    }
+
+    function bacaSoal() {
+      unlockAudio();
+      // 🔑 Batalkan timeout yang sedang berjalan
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+      const s = soal[idx];
+      bicara(s.q + ". Pilihan: " + s.o.join(", "));
+    }
+
+    function pilihJawaban(pilihan, btn) {
+      if (sudahDijawab) return;
+      sudahDijawab = true;
+
+      unlockAudio();
+
+      // 🔑 KUNCI PERBAIKAN: Batalkan timeout pembacaan soal
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+
+      // 🔑 Hentikan suara apapun yang sedang diputar
+      hentikanSuara();
+
+      // Baru mainkan suara klik
+      setTimeout(suaraKlik, 50);
+
+      const s = soal[idx];
+      const buttons = document.querySelectorAll('.option');
+      buttons.forEach(b => b.disabled = true);
+
+      const fb = document.getElementById('feedback');
+      if (pilihan === s.a) {
+        btn.classList.add('correct');
+        skor += 2;
+        setTimeout(suaraBenar, 200);
+        fb.textContent = '✅ Benar! +2 poin';
+        fb.className = 'feedback show benar';
+        // 🔑 Beri jeda agar suara efek selesai dulu baru bicara
+        setTimeout(() => {
+          if (sudahDijawab) bicara("Benar!");
+        }, 700);
+      } else {
+        btn.classList.add('wrong');
+        buttons[s.a].classList.add('correct');
+        setTimeout(suaraSalah, 200);
+        fb.textContent = '❌ Salah. Jawaban benar: ' + ['A', 'B', 'C', 'D'][s.a] + ". " + s.o[s.a];
+        fb.className = 'feedback show salah';
+        setTimeout(() => {
+          if (sudahDijawab) bicara("Salah. Jawaban yang benar adalah " + s.o[s.a]);
+        }, 700);
+      }
+
+      document.getElementById('score').textContent = skor;
+      document.getElementById('nextBtn').disabled = false;
+
+      setTimeout(() => {
+        fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function nextSoal() {
+      unlockAudio();
+      // 🔑 Hentikan suara feedback sebelum lanjut
+      hentikanSuara();
+      suaraKlik();
+      idx++;
+      if (idx >= soal.length) {
+        selesai();
+      } else {
+        tampilkanSoal();
+      }
+    }
+
+    function selesai() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.remove('hidden');
+      document.getElementById('finalScore').textContent = skor;
+      document.getElementById('mainContainer').scrollTo({ top: 0, behavior: 'smooth' });
+
+      let pesan = "";
+      if (skor >= 90) pesan = "Kamu Mendapatkan 🏆, Luar biasa! Kamu sangat menguasai materi!";
+      else if (skor >= 70) pesan = "Kamu dapat 👍, Bagus! Terus belajar ya!";
+      else if (skor >= 40) pesan = "Hasilnya Lumayan, semangat ya, masih perlu belajar lagi.";
+      else pesan = "📚 Jangan menyerah, ayo baca ulang materinya!";
+
+      document.getElementById('pesanAkhir').textContent = pesan;
+
+      // Skor pada kuis ini bertambah 2 poin per jawaban benar.
+      const jumlahJawabanBenar = Math.round(skor / 2);
+      catatAktivitas("Kuis selesai", {
+        skor: skor,
+        jumlahSoal: soal.length,
+        jawabanBenar: jumlahJawabanBenar
+      });
+
+      if (skor >= 70) setTimeout(suaraBenar, 300);
+      setTimeout(() => bicara("Kuis selesai. Skor kamu " + skor + " dari 100. " + pesan), 800);
+    }
+
+    // 1. Matikan Klik Kanan
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 2. Matikan Shortcut Keyboard (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+    document.onkeydown = function (e) {
+      if (e.keyCode == 123) { // F12
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+        return false;
+      }
+      if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U (View Source)
+        return false;
+      }
+    }
+  </script>
+</body>
+
+</html>
